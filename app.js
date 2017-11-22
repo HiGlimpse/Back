@@ -5,7 +5,7 @@ const config = require('./config/config');
 const subscription= require('./models/subscription');
 const app= express();
 const morgan= require('morgan');
-
+const path = require('path');
 
 mongoose.connect(config.mongoURI);
 
@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 //CORS CONTROL
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost');
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     // Request headers you wish to allow
@@ -29,8 +29,12 @@ app.use(function (req, res, next) {
     next();
 });
 
-
-
+app.use(express.static(path.join(__dirname, 'front')));
+app.set('view engine', 'ejs'); // set up ejs for templating
+app.set('views', path.join(__dirname, '/front/views'))
+app.get('/',function(req,res){
+  res.render('index');
+})
 
 
 app.post('/subscription',function(req,res){
@@ -51,12 +55,12 @@ app.post('/subscription',function(req,res){
       if (err) {
         return res.json({
           success: false,
-          msg: 'Email already on subscription List.'
+          msg: 'This email is already on our subscription list.'
         });
       }
       res.json({
         success: true,
-        msg: 'Success '
+        msg: 'Welcome, Thanks for your interest'
       });
     });
   }
